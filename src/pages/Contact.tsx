@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Input } from "../components/ui/input"
 import { Textarea } from "../components/ui/textarea"
 import { Button } from "../components/ui/button"
+import { Mail, Phone } from 'lucide-react'
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -30,14 +31,14 @@ const Contact = () => {
   }
 
   return (
-    <div className="min-h-screen bg-blue-400/30 py-16">
+    <div className="min-h-screen bg-blue-400/30 py-8 sm:py-12 md:py-16">
       <div className="container mx-auto px-4">
-        <h1 className="text-4xl font-bold text-center mb-12 text-white">Contact</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold text-center mb-6 sm:mb-8 md:mb-12 text-white">Contact</h1>
         
-        <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-xl p-8">
+        <div className="max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl mx-auto bg-white rounded-lg shadow-xl p-4 sm:p-6 md:p-8">
           <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label htmlFor="name" className="block mb-2 font-medium">Name</label>
+            <div className="mb-3 sm:mb-4">
+              <label htmlFor="name" className="block mb-1 sm:mb-2 font-medium text-sm sm:text-base">Name</label>
               <Input
                 id="name"
                 name="name"
@@ -48,8 +49,8 @@ const Contact = () => {
               />
             </div>
             
-            <div className="mb-4">
-              <label htmlFor="email" className="block mb-2 font-medium">Email</label>
+            <div className="mb-3 sm:mb-4">
+              <label htmlFor="email" className="block mb-1 sm:mb-2 font-medium text-sm sm:text-base">Email</label>
               <Input
                 id="email"
                 name="email"
@@ -61,8 +62,8 @@ const Contact = () => {
               />
             </div>
             
-            <div className="mb-4">
-              <label htmlFor="subject" className="block mb-2 font-medium">Subject</label>
+            <div className="mb-3 sm:mb-4">
+              <label htmlFor="subject" className="block mb-1 sm:mb-2 font-medium text-sm sm:text-base">Subject</label>
               <Input
                 id="subject"
                 name="subject"
@@ -73,27 +74,33 @@ const Contact = () => {
               />
             </div>
             
-            <div className="mb-6">
-              <label htmlFor="message" className="block mb-2 font-medium">Message</label>
+            <div className="mb-4 sm:mb-6">
+              <label htmlFor="message" className="block mb-1 sm:mb-2 font-medium text-sm sm:text-base">Message</label>
               <Textarea
                 id="message"
                 name="message"
                 value={formData.message}
                 onChange={handleChange}
                 required
-                className="w-full min-h-32"
+                className="w-full min-h-24 sm:min-h-32"
               />
             </div>
             
-            <Button type="submit" className="w-full bg-blue-500 hover:bg-blue-600">
+            <Button type="submit" className="w-full bg-blue-500 hover:bg-blue-600 text-sm sm:text-base">
               Send Message
             </Button>
           </form>
           
-          <div className="mt-8 pt-8 border-t">
-            <h2 className="text-xl font-semibold mb-4">Contact Information</h2>
-            <p className="mb-2">Email: contact@victorclari.net</p>
-            <p>Phone: +1 (123) 456-7890</p>
+          <div className="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t">
+            <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Contact Information</h2>
+            <div className="flex items-center mb-2">
+              <Mail size={18} className="mr-2" />
+              <p className="text-sm sm:text-base">contact@victorclari.net</p>
+            </div>
+            <div className="flex items-center">
+              <Phone size={18} className="mr-2" />
+              <p className="text-sm sm:text-base">+1 (123) 456-7890</p>
+            </div>
           </div>
         </div>
       </div>

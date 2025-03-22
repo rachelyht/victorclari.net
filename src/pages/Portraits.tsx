@@ -9,11 +9,11 @@ const Portraits = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-blue-400/30 py-16">
+    <div className="min-h-screen bg-blue-400/30 py-8 sm:py-12 md:py-16">
       <div className="container mx-auto px-4">
-        <h1 className="text-4xl font-bold text-center mb-12 text-white">Portraits</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold text-center mb-6 sm:mb-8 md:mb-12 text-white">Portraits</h1>
         
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-4xl mx-auto">
           <Carousel className="w-full">
             <CarouselContent>
               {portraits.map((portrait) => (
@@ -22,14 +22,14 @@ const Portraits = () => {
                     <img 
                       src={portrait.src} 
                       alt={portrait.alt} 
-                      className="rounded-lg shadow-xl w-full max-h-[600px] object-cover"
+                      className="rounded-lg shadow-xl w-full max-h-[300px] sm:max-h-[400px] md:max-h-[500px] lg:max-h-[600px] object-cover"
                     />
                   </div>
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
+            <CarouselPrevious className="hidden sm:flex" />
+            <CarouselNext className="hidden sm:flex" />
           </Carousel>
         </div>
       </div>

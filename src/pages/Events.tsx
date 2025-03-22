@@ -1,4 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card"
+import { Calendar, Clock, MapPin } from 'lucide-react'
 
 const Events = () => {
   // Placeholder for events
@@ -30,20 +31,28 @@ const Events = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-blue-400/30 py-16">
+    <div className="min-h-screen bg-blue-400/30 py-8 sm:py-12 md:py-16">
       <div className="container mx-auto px-4">
-        <h1 className="text-4xl font-bold text-center mb-12 text-white">Upcoming Events</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold text-center mb-6 sm:mb-8 md:mb-12 text-white">Upcoming Events</h1>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {events.map((event) => (
-            <Card key={event.id}>
-              <CardHeader>
-                <CardTitle>{event.title}</CardTitle>
-                <CardDescription>{event.date} • {event.time}</CardDescription>
+            <Card key={event.id} className="overflow-hidden">
+              <CardHeader className="p-3 sm:p-4 md:p-6">
+                <CardTitle className="text-lg sm:text-xl">{event.title}</CardTitle>
+                <div className="flex items-center mt-2">
+                  <Calendar size={16} className="mr-1 text-blue-500" />
+                  <CardDescription className="text-xs sm:text-sm">{event.date}</CardDescription>
+                  <Clock size={16} className="ml-3 mr-1 text-blue-500" />
+                  <CardDescription className="text-xs sm:text-sm">{event.time}</CardDescription>
+                </div>
               </CardHeader>
-              <CardContent>
-                <p className="font-medium mb-2">{event.location}</p>
-                <p>{event.description}</p>
+              <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
+                <div className="flex items-center mb-2">
+                  <MapPin size={16} className="mr-1 text-blue-500 flex-shrink-0" />
+                  <p className="font-medium text-sm sm:text-base">{event.location}</p>
+                </div>
+                <p className="text-sm sm:text-base">{event.description}</p>
               </CardContent>
             </Card>
           ))}
