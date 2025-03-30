@@ -23,7 +23,7 @@ const Header = () => {
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="w-full md:w-auto flex justify-between items-center">
             <a onClick={() => scrollToSection('home')} className="text-[#e8d4a9] text-xl font-bold cursor-pointer">
-              Victor Chan
+              VICTOR CHAN
             </a>
             <Button 
               variant="ghost" 
