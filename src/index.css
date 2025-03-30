@@ -3,8 +3,16 @@
 @tailwind utilities;
 @layer base {
   :root {
-    --radius: 0.5rem
-  ;
+    --radius: 0.5rem;
+    /* Victor Chan website colors based on main image */
+    --primary: 210 50% 35%;          /* #3a5a78 - Main blue from image */
+    --primary-foreground: 0 0% 98%;  /* Light text color */
+    --secondary: 45 65% 80%;         /* #e8d4a9 - Gold accent from image */
+    --background: 210 20% 98%;       /* #f5f5f5 - Light background */
+    --muted: 210 20% 96%;            /* #eef2f6 - Subtle background */
+    --muted-foreground: 215 16% 47%; /* #5c7a98 - Muted text color */
+    
+    /* Keep existing sidebar colors */
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
@@ -12,7 +20,8 @@
     --sidebar-accent: 240 4.8% 95.9%;
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%}
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
   .dark {
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
@@ -21,7 +30,18 @@
     --sidebar-accent: 240 3.7% 15.9%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Safari-specific smooth scrolling */
+@media screen and (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
   }
 }
 
