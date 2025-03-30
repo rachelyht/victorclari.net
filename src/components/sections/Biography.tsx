@@ -9,7 +9,7 @@ const Biography = () => {
           <div className="bg-white rounded-lg shadow-lg p-6">
             <h3 className="text-xl font-semibold mb-4 text-[#3a5a78] text-center">陳凱聲</h3>
             <p className="mb-4 text-sm sm:text-base text-justify">
-              陳凱聲現為香港演藝學院音樂系碩士研究生，先前畢業於香港浸會大學音樂系學士課程。他曾跟隨史安祖先生、方濤先生、蔡國田先生及艾爾高先生學習單簧管，同時亦向黃德釗博士學習色士風。陳氏已取得單簧管聖三一演奏文憑（LTCL）以及色士風聖三一演奏文憑（ATCL）。
+              陳凱聲現為香港演藝學院音樂系碩士，先前畢業於香港浸會大學音樂系學士課程。他曾跟隨史安祖先生、方濤先生、蔡國田先生及艾爾高先生學習單簧管，同時亦向黃德釗博士學習色士風。陳氏已取得單簧管聖三一演奏文憑（LTCL）以及色士風聖三一演奏文憑（ATCL）。
             </p>
             <p className="mb-4 text-sm sm:text-base text-justify">
               陳氏熱衷於參與各類音樂活動，並活躍於多個樂團的演出，包括翱樂管樂團、香港愛樂管樂團、香港室樂愛樂管樂團及香港浸會交響樂團等。此外，他曾參與「Share the Stage with HKPhil」活動，與香港管弦樂團共同演出。除本地活動外，陳氏更遠赴奧地利參加大師班，跟隨Dario Zingales先生學習單簧管。
