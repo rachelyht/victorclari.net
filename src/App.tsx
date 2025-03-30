@@ -10,27 +10,29 @@ import Contact from './components/sections/Contact'
 
 function App() {
   return (
-    <Layout>
+    <>
       <div id="home" className="section">
         <Hero />
       </div>
       <Header />
-      <div id="biography" className="section">
-        <Biography />
-      </div>
-      <div id="gallery" className="section">
-        <Gallery />
-      </div>
-      <div id="student-gallery" className="section">
-        <StudentGallery />
-      </div>
-      <div id="videos" className="section">
-        <VideoGallery />
-      </div>
-      <div id="contact" className="section">
-        <Contact />
-      </div>
-    </Layout>
+      <Layout>
+        <div id="biography" className="section">
+          <Biography />
+        </div>
+        <div id="gallery" className="section">
+          <Gallery />
+        </div>
+        <div id="student-gallery" className="section">
+          <StudentGallery />
+        </div>
+        <div id="videos" className="section">
+          <VideoGallery />
+        </div>
+        <div id="contact" className="section">
+          <Contact />
+        </div>
+      </Layout>
+    </>
   )
 }
 
