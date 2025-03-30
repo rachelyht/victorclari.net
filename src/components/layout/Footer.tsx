@@ -1,4 +1,4 @@
-import { Linkedin, Instagram, Youtube, Mail, Phone } from 'lucide-react'
+import { Linkedin, Instagram, Youtube, Mail } from 'lucide-react'
 
 const Footer = () => {
   return (
@@ -9,7 +9,7 @@ const Footer = () => {
             <p>&copy; {new Date().getFullYear()} Victor Chan. All rights reserved.</p>
           </div>
           <div className="flex space-x-6">
-            <a href="mailto:contact@victorclari.net" className="text-white hover:text-[#e8d4a9] flex items-center">
+            <a href="mailto:victormusic.clarinet@gmail.com" className="text-white hover:text-[#e8d4a9] flex items-center">
               <Mail size={20} />
               <span className="ml-2 sm:inline hidden">Email</span>
             </a>
