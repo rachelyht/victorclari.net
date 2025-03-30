@@ -26,20 +26,16 @@ const Biography = () => {
           <div className="bg-white rounded-lg shadow-lg p-6">
             <h3 className="text-xl font-semibold mb-4 text-[#3a5a78] text-center">Victor Chan</h3>
             <p className="mb-4 text-sm sm:text-base text-justify">
-              Victor Chan is a distinguished clarinetist and saxophonist with a passion for both performance and education. 
-              Born and raised in Hong Kong, Victor began his musical journey at an early age, showing exceptional talent and dedication.
+              Victor Chan is currently pursuing a Master of Music degree at the Hong Kong Academy for Performing Arts. He graduated with a Bachelor of Arts (Hons) in Music Studies from Hong Kong Baptist University. During his studies, he trained in clarinet under Mr. Andrew Simon, Mr. Lorenzo Iosco, Mr. Martin Choy, and Mr. Richard Fong, and studied saxophone with Dr. Wong Tak Chiu. Victor has earned the Licentiate of Trinity College London (LTCL) in Clarinet and the Associate of Trinity College London (ATCL) in Saxophone.
             </p>
             <p className="mb-4 text-sm sm:text-base text-justify">
-              He completed his formal music education at prestigious institutions, earning degrees in Music Performance. 
-              Throughout his career, Victor has performed with various orchestras and ensembles across Asia and Europe.
+              Victor is an active participant in a wide range of musical activities and performances. He has performed with various ensembles, including the O Wind Ensemble, Hong Kong Wind Philharmonia, Hong Kong Chamber Wind Philharmonia, and Hong Kong Baptist Symphony Orchestra. He also took part in the "Share the Stage with HKPhil" initiative, performing alongside the Hong Kong Philharmonic Orchestra. Beyond his local achievements, Victor further honed his skills by attending an Austrian Master Class in Austria, where he studied clarinet under Mr. Dario Zingales.
             </p>
             <p className="mb-4 text-sm sm:text-base text-justify">
-              As an educator, Victor is committed to nurturing the next generation of musicians. 
-              He maintains a private teaching studio and regularly conducts masterclasses and workshops.
+              In addition to his performances, Victor has achieved remarkable success in music competitions. He was awarded Champion in the Professional Group of the 5th Hong Kong Music Talent Competition and First Prize in the Chamber Music Group of the Zhongsin International Music Competition. In 2019, Victor performed with the O Wind Ensemble at the Nie Er Youth Wind Band Art Week Competition, where they earned the First Prize in the Open Group.
             </p>
             <p className="text-sm sm:text-base text-justify">
-              Victor's playing is characterized by his expressive tone, technical precision, and deep musical understanding. 
-              He continues to expand his repertoire and explore new musical collaborations.
+              Victor possesses over eight years of experience teaching the clarinet and saxophone, covering one-on-one instruction, group lessons, ensemble coaching, and orchestra conducting. His students have consistently achieved outstanding results in competitions and examinations, and he has been recognized with the Outstanding Teacher Award at the Hong Kong Music Talent Award and the Hong Kong Youth Catania Music Competition. Victor specializes in designing personalized lesson plans tailored to each student's needs and goals, ensuring that every learner can fully develop their musical talents.
             </p>
           </div>
         </div>
