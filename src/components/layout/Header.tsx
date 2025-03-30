@@ -22,13 +22,13 @@ const Header = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="w-full md:w-auto flex justify-between items-center">
-            <a onClick={() => scrollToSection('home')} className="text-[#e8d4a9] text-xl font-bold cursor-pointer">
+            <a onClick={() => scrollToSection('home')} className="text-[#cfd7ec] text-xl font-bold cursor-pointer">
               VICTOR CHAN
             </a>
             <Button 
               variant="ghost" 
               size="icon" 
-              className="md:hidden text-white hover:text-[#e8d4a9]"
+              className="md:hidden text-white hover:text-[#cfd7ec]"
               onClick={toggleMenu}
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -36,11 +36,11 @@ const Header = () => {
           </div>
           
           <nav className={`${isMenuOpen ? 'flex' : 'hidden'} md:flex flex-col md:flex-row w-full md:w-auto space-y-4 md:space-y-0 md:space-x-6 mt-4 md:mt-0`}>
-            <a onClick={() => scrollToSection('biography')} className="hover:text-[#e8d4a9] transition-colors cursor-pointer">Biography</a>
-            <a onClick={() => scrollToSection('gallery')} className="hover:text-[#e8d4a9] transition-colors cursor-pointer">Gallery</a>
-            <a onClick={() => scrollToSection('student-gallery')} className="hover:text-[#e8d4a9] transition-colors cursor-pointer">Students</a>
-            <a onClick={() => scrollToSection('videos')} className="hover:text-[#e8d4a9] transition-colors cursor-pointer">Videos</a>
-            <a onClick={() => scrollToSection('contact')} className="hover:text-[#e8d4a9] transition-colors cursor-pointer">Contact</a>
+            <a onClick={() => scrollToSection('biography')} className="hover:text-[#cfd7ec] transition-colors cursor-pointer">Biography</a>
+            <a onClick={() => scrollToSection('gallery')} className="hover:text-[#cfd7ec] transition-colors cursor-pointer">Gallery</a>
+            <a onClick={() => scrollToSection('student-gallery')} className="hover:text-[#cfd7ec] transition-colors cursor-pointer">Students</a>
+            <a onClick={() => scrollToSection('videos')} className="hover:text-[#cfd7ec] transition-colors cursor-pointer">Videos</a>
+            <a onClick={() => scrollToSection('contact')} className="hover:text-[#cfd7ec] transition-colors cursor-pointer">Contact</a>
           </nav>
         </div>
       </div>

@@ -8,16 +8,16 @@ const Biography = () => {
           {/* Chinese Biography */}
           <div className="bg-white rounded-lg shadow-lg p-6">
             <h3 className="text-xl font-semibold mb-4 text-[#3a5a78] text-center">陳凱聲</h3>
-            <p className="mb-4 text-sm sm:text-base">
+            <p className="mb-4 text-sm sm:text-base text-justify">
               陳凱聲是一位傑出的單簧管和薩克斯管音樂家，專注於表演和教育。陳凱聲在香港出生並長大，自小就展現出對音樂的熱愛和天賦。
             </p>
-            <p className="mb-4 text-sm sm:text-base">
+            <p className="mb-4 text-sm sm:text-base text-justify">
               他在著名的音樂學院完成了正規的音樂教育，獲得了音樂表演學位。在他的職業生涯中，陳凱聲與亞洲和歐洲的各種樂團和合奏團一起表演。
             </p>
-            <p className="mb-4 text-sm sm:text-base">
+            <p className="mb-4 text-sm sm:text-base text-justify">
               作為一名教育家，陳凱聲致力於培養下一代音樂家。他經營著私人教學工作室，並定期舉辦大師班和工作坊。
             </p>
-            <p className="text-sm sm:text-base">
+            <p className="text-sm sm:text-base text-justify">
               陳凱聲的演奏以其富有表現力的音色、精準的技巧和深刻的音樂理解而聞名。他不斷擴展自己的曲目並探索新的音樂合作。
             </p>
           </div>
@@ -25,19 +25,19 @@ const Biography = () => {
           {/* English Biography */}
           <div className="bg-white rounded-lg shadow-lg p-6">
             <h3 className="text-xl font-semibold mb-4 text-[#3a5a78] text-center">Victor Chan</h3>
-            <p className="mb-4 text-sm sm:text-base">
+            <p className="mb-4 text-sm sm:text-base text-justify">
               Victor Chan is a distinguished clarinetist and saxophonist with a passion for both performance and education. 
               Born and raised in Hong Kong, Victor began his musical journey at an early age, showing exceptional talent and dedication.
             </p>
-            <p className="mb-4 text-sm sm:text-base">
+            <p className="mb-4 text-sm sm:text-base text-justify">
               He completed his formal music education at prestigious institutions, earning degrees in Music Performance. 
               Throughout his career, Victor has performed with various orchestras and ensembles across Asia and Europe.
             </p>
-            <p className="mb-4 text-sm sm:text-base">
+            <p className="mb-4 text-sm sm:text-base text-justify">
               As an educator, Victor is committed to nurturing the next generation of musicians. 
               He maintains a private teaching studio and regularly conducts masterclasses and workshops.
             </p>
-            <p className="text-sm sm:text-base">
+            <p className="text-sm sm:text-base text-justify">
               Victor's playing is characterized by his expressive tone, technical precision, and deep musical understanding. 
               He continues to expand his repertoire and explore new musical collaborations.
             </p>
