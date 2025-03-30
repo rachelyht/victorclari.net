@@ -15,7 +15,7 @@ const Hero = () => {
       {/* Content positioned over the image */}
       <div className="relative z-10 flex items-center justify-center min-h-screen pt-16">
         <div className="text-center text-white px-4 py-8">
- tiop and           <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-2 sm:mb-4">Victor Chan</h1>
+          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-2 sm:mb-4">Victor Chan</h1>
           <p className="text-lg sm:text-xl mb-6 sm:mb-8">Clarinetist</p>
           <button onClick={() => document.getElementById('biography')?.scrollIntoView({ behavior: 'smooth' })}
             className="px-6 py-3 bg-[#3a5a78] text-white rounded-full hover:bg-[#1c2e3f] transition-colors border-2 border-white">
