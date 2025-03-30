@@ -1,6 +1,5 @@
 import './App.css'
 import Layout from './components/layout/Layout'
-import Header from './components/layout/Header'
 import Hero from './components/sections/Hero'
 import Biography from './components/sections/Biography'
 import Gallery from './components/sections/Gallery'
@@ -14,7 +13,6 @@ function App() {
       <div id="home" className="section">
         <Hero />
       </div>
-      <Header />
       <Layout>
         <div id="biography" className="section">
           <Biography />
