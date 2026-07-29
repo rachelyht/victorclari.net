@@ -3,7 +3,7 @@ import { test } from 'node:test'
 
 import JSZip from 'jszip'
 
-import { HELPER_NAME, keynoteBundle } from '../../web/js/keynote-bundle.js'
+import { HELPER_NAME, keynoteBundle } from '../web/js/keynote-bundle.js'
 
 const deck = Buffer.from('pretend .pptx')
 

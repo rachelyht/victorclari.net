@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { fileRef, referencedBlobKeys, scoreFiles, scorePageSources, scoreRef } from '../../web/js/model.js'
-import { buildExcerptSlides, groupFullScorePages } from '../../web/js/slide-plan.js'
+import { fileRef, referencedBlobKeys, scoreFiles, scorePageSources, scoreRef } from '../web/js/model.js'
+import { buildExcerptSlides, groupFullScorePages } from '../web/js/slide-plan.js'
 
 const A4 = { w: 595, h: 842 }
 const LANDSCAPE = { w: 842, h: 595 }

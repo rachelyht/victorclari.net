@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
-import { buildSlidePlan, contentBox, reconcileSlidePlan, videoBox } from '../../web/js/slide-plan.js'
-import { splitSlide } from '../../web/js/storyboard.js'
+import { buildSlidePlan, contentBox, reconcileSlidePlan, videoBox } from '../web/js/slide-plan.js'
+import { splitSlide } from '../web/js/storyboard.js'
 
 const portrait = { w: 1200, h: 1600 }
 

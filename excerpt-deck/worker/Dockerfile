@@ -1,18 +1,16 @@
-FROM node:20-bookworm-slim
+FROM python:3.12-slim-bookworm
 
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends ffmpeg poppler-utils python3 ca-certificates curl \
-  && curl -fsSL https://github.com/yt-dlp/yt-dlp/releases/download/2025.01.26/yt-dlp -o /usr/local/bin/yt-dlp \
-  && chmod +x /usr/local/bin/yt-dlp \
+  && apt-get install -y --no-install-recommends ffmpeg poppler-utils ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY worker/package.json worker/package-lock.json* ./worker/
-RUN cd worker && npm install --omit=dev
-COPY web ./web
+COPY worker/requirements.txt ./worker/requirements.txt
+RUN pip install --no-cache-dir -r worker/requirements.txt
+
 COPY worker ./worker
 
 ENV PORT=8787
 EXPOSE 8787
 WORKDIR /app/worker
-CMD ["node", "server.js"]
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT}"]

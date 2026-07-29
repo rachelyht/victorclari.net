@@ -1,0 +1,14 @@
+{
+  "name": "excerpt-deck-web-tests",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Node test runner for the browser modules in web/js (layout rules, offline .pptx export, Keynote bundle).",
+  "scripts": {
+    "test": "node --test test/"
+  },
+  "devDependencies": {
+    "jszip": "3.10.1",
+    "pptxgenjs": "3.12.0"
+  }
+}

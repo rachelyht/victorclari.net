@@ -10,7 +10,7 @@ import {
   groupFullScorePages,
   reconcileSlidePlan,
   videoBox,
-} from '../../web/js/slide-plan.js'
+} from '../web/js/slide-plan.js'
 
 const A4 = { w: 595, h: 842 }
 const A4_LANDSCAPE = { w: 842, h: 595 }

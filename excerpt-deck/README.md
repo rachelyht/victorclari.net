@@ -4,8 +4,8 @@ Collect orchestral excerpt material on a phone or tablet and turn each project i
 that opens in Keynote — every slide of an excerpt carries the video, the first slide shows the part
 score, the following slides show the full score two pages at a time.
 
-Self-contained subproject: plain HTML/CSS/vanilla JS front end (`web/`), optional Node worker
-(`worker/`). Nothing here touches the rest of the site.
+Self-contained subproject: plain HTML/CSS/vanilla JS front end (`web/`), optional Python worker
+(`worker/`, FastAPI). Nothing here touches the rest of the site.
 
 ## Two ways to run it
 
@@ -46,8 +46,9 @@ or natively, with `ffmpeg`, `yt-dlp` and `pdftoppm` on `PATH`:
 
 ```bash
 cd excerpt-deck/worker
-npm install
-npm start                       # http://localhost:8787
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --port 8787
 ```
 
 The worker URL is set on the export screen (default `http://localhost:8787`) and remembered.
@@ -58,24 +59,36 @@ YouTube answers some requests with “Sign in to confirm you're not a bot”. Po
 signed-in browser session when that happens:
 
 ```bash
-YTDLP_COOKIES_FROM_BROWSER=safari npm start        # or chrome / firefox, or YTDLP_COOKIES=cookies.txt
+YTDLP_COOKIES_FROM_BROWSER=safari uvicorn app.main:app --port 8787   # or chrome / firefox, or YTDLP_COOKIES=cookies.txt
 ```
 
 ## Tests
 
+Browser modules (Node's test runner):
+
 ```bash
-cd excerpt-deck/worker
+cd excerpt-deck
 npm install
 npm test
 ```
 
 Covers the layout rules (slide counts, 2-up grouping, landscape pages, aspect-preserving fit, plan
-reconciliation), the exported deck's geometry (slide size, every shape inside the slide), the
-Keynote helper bundle, multi-file scores (page flattening, order, garbage sweep) and two end-to-end runs:
-the pipeline directly on a generated 3-page PDF and a clip, and the worker over HTTP with a full
-score split across three image files, asserting the composed `.pptx` has one slide per planned
-slide and consistent media relationships. The end-to-end tests skip themselves when
-`ffmpeg`/`pdftoppm` are missing.
+reconciliation, splitting a 2-up slide), multi-file scores (page flattening, order, garbage sweep),
+the offline deck's geometry (slide size, every shape inside the slide) and the Keynote helper bundle.
+
+Worker (pytest):
+
+```bash
+cd excerpt-deck/worker
+pip install -r requirements.txt
+pytest
+```
+
+Covers the composed deck (slide size, shapes inside the slide, the clip stored once for the whole
+excerpt, titles and pages on the right slides), rasterising a 12-page PDF in page order, the exact
+ffmpeg trim length, the yt-dlp cookie/sign-in handling and download cache, and the job API over
+HTTP with a full score split across three image files. Tests needing `ffmpeg`/`pdftoppm` skip
+themselves when those are missing.
 
 ## How it works
 
@@ -92,9 +105,9 @@ slide and consistent media relationships. The end-to-end tests skip themselves w
    apply that box to the excerpt or the whole deck, edit or hide titles, swap/rotate pages, split a
    2-up slide, reorder, duplicate, delete, or regenerate from the rules. Edits are autosaved and
    survive adding excerpts or replacing PDFs.
-4. **Export** runs `deck-pptx.js` — the same module in the browser and in the worker — over that
-   plan, so the deck matches the preview. `pptx-dedupe.js` then collapses the repeated video copies
-   pptxgenjs writes per slide into one, which is what keeps deck size sane.
+4. **Export** walks that plan, so the deck matches the preview: in the browser `deck-pptx.js`
+   (pptxgenjs) plus `pptx-dedupe.js`, which collapses the video copy pptxgenjs writes per slide;
+   in the worker `app/deck.py` (python-pptx), which already stores identical media once.
 
 ```
 web/js
@@ -109,9 +122,12 @@ web/js
   keynote-bundle.js  .key output: deck + AppleScript helper for Keynote
   export-local.js  offline export path
   export-worker.js worker export path
-worker
-  server.js        POST /jobs, GET /jobs/:id, GET /jobs/:id/download, GET /health
-  pipeline/        yt-dlp download, ffmpeg trim, pdftoppm rasterise
+worker/app
+  main.py          FastAPI: GET /health, POST /jobs, GET /jobs/{id}, GET /jobs/{id}/download
+  jobs.py          job registry + manifest -> deck pipeline
+  media.py         yt-dlp download, ffmpeg trim/poster, pdftoppm rasterise
+  deck.py          SlidePlan -> .pptx (python-pptx)
+  tools.py         subprocess wrapper, tool detection
 ```
 
 ## Known limits
