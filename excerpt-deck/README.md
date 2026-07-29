@@ -64,12 +64,12 @@ YTDLP_COOKIES_FROM_BROWSER=safari uvicorn app.main:app --port 8787   # or chrome
 
 ## Tests
 
-Browser modules (Node's test runner):
+Browser modules (Node's built-in test runner — no npm install; the tests load the vendored
+`web/vendor/pptxgen.bundle.js` through `vendor-node.mjs`):
 
 ```bash
 cd excerpt-deck
-npm install
-npm test
+node --test test/
 ```
 
 Covers the layout rules (slide counts, 2-up grouping, landscape pages, aspect-preserving fit, plan
@@ -117,11 +117,14 @@ web/js
   pdf-preview.js   pdf.js rasterising, probing, video poster frames
   slide-plan.js    layout rules -> SlidePlan (pure, unit-tested)
   storyboard.js    slide rendering + per-slide editing gestures
-  deck-pptx.js     SlidePlan -> .pptx (shared with the worker)
+  deck-pptx.js     SlidePlan -> .pptx (offline export)
   pptx-dedupe.js   collapse duplicated media in the finished .pptx
   keynote-bundle.js  .key output: deck + AppleScript helper for Keynote
   export-local.js  offline export path
   export-worker.js worker export path
+web/vendor          pptxgenjs + jszip + pdf.js bundles, loaded by <script>/import
+vendor-node.mjs     exposes those bundles to `node --test`
+test/               unit tests for the browser modules
 worker/app
   main.py          FastAPI: GET /health, POST /jobs, GET /jobs/{id}, GET /jobs/{id}/download
   jobs.py          job registry + manifest -> deck pipeline

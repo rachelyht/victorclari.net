@@ -1,8 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
-import JSZip from 'jszip'
-import PptxGenJS from 'pptxgenjs'
+import { JSZip, PptxGenJS } from '../vendor-node.mjs'
 
 import { composeDeck } from '../web/js/deck-pptx.js'
 import { SLIDE_H_IN, SLIDE_W_IN, buildSlidePlan } from '../web/js/slide-plan.js'

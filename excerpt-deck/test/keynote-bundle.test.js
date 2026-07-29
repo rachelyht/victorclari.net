@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
-import JSZip from 'jszip'
+import { JSZip } from '../vendor-node.mjs'
 
 import { HELPER_NAME, keynoteBundle } from '../web/js/keynote-bundle.js'
 
