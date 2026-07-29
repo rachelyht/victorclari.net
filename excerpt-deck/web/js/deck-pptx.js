@@ -40,7 +40,10 @@ function timeLabel(seconds) {
  */
 export async function composeDeck({ PptxGenJS, plan, images, videos, title = 'Excerpt deck', output = 'blob' }) {
   const pptx = new PptxGenJS()
-  pptx.layout = 'LAYOUT_16x9'
+  // Boxes are laid out in inches of a SLIDE_W_IN x SLIDE_H_IN slide, so the deck must use exactly
+  // that; the built-in LAYOUT_16x9 is 10 x 5.625in and would push every shape off the slide.
+  pptx.defineLayout({ name: 'EXCERPT_16x9', width: SLIDE_W_IN, height: SLIDE_H_IN })
+  pptx.layout = 'EXCERPT_16x9'
   pptx.title = title
 
   for (const slide of plan) {

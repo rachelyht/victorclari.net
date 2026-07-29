@@ -2,6 +2,7 @@
 
 import { getBlob } from './db.js'
 import { composeDeck, imageKey } from './deck-pptx.js'
+import { keynoteBundle } from './keynote-bundle.js'
 import { scoreFiles } from './model.js'
 import { rasterizeScore, videoPoster } from './pdf-preview.js'
 import { dedupeMedia } from './pptx-dedupe.js'
@@ -51,7 +52,7 @@ async function collectVideos(project, report) {
   return videos
 }
 
-export async function exportOffline(project, plan, { onProgress = () => {} } = {}) {
+export async function exportOffline(project, plan, { onProgress = () => {}, format = 'pptx' } = {}) {
   const report = (message) => onProgress(message)
   const images = await collectImages(project, report)
   const videos = await collectVideos(project, report)
@@ -66,7 +67,14 @@ export async function exportOffline(project, plan, { onProgress = () => {} } = {
   })
   report('Removing duplicated video copies')
   const { deck } = await dedupeMedia(composed, globalThis.JSZip, 'blob')
+  const name = slugify(project.title)
+  if (format === 'key') {
+    report('Packing the Keynote helper')
+    const bundle = await keynoteBundle({ JSZip: globalThis.JSZip, deck, name })
+    downloadBlob(bundle, `${name}-keynote.zip`)
+    return bundle
+  }
   report('Downloading')
-  downloadBlob(deck, `${slugify(project.title)}.pptx`)
+  downloadBlob(deck, `${name}.pptx`)
   return deck
 }

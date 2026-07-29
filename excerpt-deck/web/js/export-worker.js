@@ -1,6 +1,7 @@
 /** Worker export: used when an excerpt needs yt-dlp (YouTube) or an exact ffmpeg trim. */
 
 import { getBlob } from './db.js'
+import { keynoteBundle } from './keynote-bundle.js'
 import { scoreFiles } from './model.js'
 import { downloadBlob, slugify } from './util.js'
 
@@ -66,7 +67,11 @@ export async function checkWorker(baseUrl) {
   }
 }
 
-export async function exportViaWorker(project, plan, { baseUrl, onProgress = () => {}, signal } = {}) {
+export async function exportViaWorker(
+  project,
+  plan,
+  { baseUrl, onProgress = () => {}, signal, format = 'pptx' } = {}
+) {
   const root = baseUrl.replace(/\/$/, '')
   onProgress('Uploading project to the worker')
   const created = await fetch(`${root}/jobs`, {
@@ -91,6 +96,13 @@ export async function exportViaWorker(project, plan, { baseUrl, onProgress = () 
   const download = await fetch(`${root}/jobs/${jobId}/download`, { signal })
   if (!download.ok) throw new Error(`Download failed (HTTP ${download.status})`)
   const blob = await download.blob()
-  downloadBlob(blob, `${slugify(project.title)}.pptx`)
+  const name = slugify(project.title)
+  if (format === 'key') {
+    onProgress('Packing the Keynote helper')
+    const bundle = await keynoteBundle({ JSZip: globalThis.JSZip, deck: blob, name })
+    downloadBlob(bundle, `${name}-keynote.zip`)
+    return bundle
+  }
+  downloadBlob(blob, `${name}.pptx`)
   return blob
 }

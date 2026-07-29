@@ -17,9 +17,13 @@ Self-contained subproject: plain HTML/CSS/vanilla JS front end (`web/`), optiona
 A project may mix both; the worker is only contacted when an excerpt needs it. Uploaded-video
 projects work with no network at all once the page has loaded.
 
-Output is `.pptx`, which Keynote opens directly (`File ▸ Open`, then `Save As` if you want a `.key`).
-Native `.key` export is not implemented — the format is closed — so the export screen lists it as
-coming soon; it would be added as an asset bundle plus an AppleScript that drives Keynote on a Mac.
+## Export formats
+
+- **`.pptx`** — a 13.333 × 7.5in (16:9) deck; Keynote opens it directly with `File ▸ Open`.
+- **`.key`** — a zip holding that deck plus `Make Keynote.command`. Only Keynote can write the
+  `.key` package (undocumented protobuf format), so the helper drives the Keynote on your Mac over
+  AppleScript: it opens the deck and saves the `.key` beside it, and falls back to telling you to
+  use `File ▸ Save As` if automation is refused. Nothing leaves the machine.
 
 ## Run the front end
 
@@ -50,6 +54,13 @@ The worker URL is set on the export screen (default `http://localhost:8787`) and
 Downloading from YouTube is against YouTube's terms of service; run it locally on material you have
 the rights to.
 
+YouTube answers some requests with “Sign in to confirm you're not a bot”. Point yt-dlp at a
+signed-in browser session when that happens:
+
+```bash
+YTDLP_COOKIES_FROM_BROWSER=safari npm start        # or chrome / firefox, or YTDLP_COOKIES=cookies.txt
+```
+
 ## Tests
 
 ```bash
@@ -59,7 +70,8 @@ npm test
 ```
 
 Covers the layout rules (slide counts, 2-up grouping, landscape pages, aspect-preserving fit, plan
-reconciliation), multi-file scores (page flattening, order, garbage sweep) and two end-to-end runs:
+reconciliation), the exported deck's geometry (slide size, every shape inside the slide), the
+Keynote helper bundle, multi-file scores (page flattening, order, garbage sweep) and two end-to-end runs:
 the pipeline directly on a generated 3-page PDF and a clip, and the worker over HTTP with a full
 score split across three image files, asserting the composed `.pptx` has one slide per planned
 slide and consistent media relationships. The end-to-end tests skip themselves when
@@ -94,6 +106,7 @@ web/js
   storyboard.js    slide rendering + per-slide editing gestures
   deck-pptx.js     SlidePlan -> .pptx (shared with the worker)
   pptx-dedupe.js   collapse duplicated media in the finished .pptx
+  keynote-bundle.js  .key output: deck + AppleScript helper for Keynote
   export-local.js  offline export path
   export-worker.js worker export path
 worker
@@ -107,7 +120,9 @@ worker
   the clip window is printed under the video. Use the worker (or trim before uploading) when the
   deck must contain only the excerpt. Exact in-browser trimming via WebCodecs is the obvious next
   step.
-- Keynote re-encodes media on import; check the deck once before rehearsal.
+- Keynote re-encodes media on import; check the deck once before rehearsal. The `.key` helper and
+  the deck itself have not been run against a real Keynote from CI — the geometry is verified by
+  rendering the exported `.pptx`, the rest needs a Mac.
 - Everything is device-local — there is no sync between your phone and your Mac yet.
 - iPhone photos taken as HEIC only render in browsers that can decode HEIC (Safari does, desktop
   Chrome does not). Export as JPEG, or use the PDF route, if a page comes out blank.

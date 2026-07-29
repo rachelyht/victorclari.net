@@ -943,8 +943,9 @@ async function renderExport(projectId) {
       <label for="format">Format</label>
       <select id="format">
         <option value="pptx">PowerPoint .pptx — opens in Keynote</option>
-        <option value="key" disabled>Keynote .key — coming soon</option>
+        <option value="key">Keynote .key — zip with a Mac helper</option>
       </select>
+      <div class="hint" id="format-hint"></div>
 
       <div id="worker-config" ${offline ? 'hidden' : ''}>
         <label for="worker-url">Worker URL</label>
@@ -988,6 +989,17 @@ async function renderExport(projectId) {
       : `Not reachable: ${result.error}`
   }
 
+  const formatSelect = root.querySelector('#format')
+  const formatHint = root.querySelector('#format-hint')
+  const describeFormat = () => {
+    formatHint.textContent =
+      formatSelect.value === 'key'
+        ? 'Only Keynote can write .key, so you get a zip: the deck plus a “Make Keynote.command” to double-click on your Mac. It saves the .key next to the deck.'
+        : 'Keynote opens .pptx directly (File ▸ Open) and edits it like any other deck.'
+  }
+  formatSelect.onchange = describeFormat
+  describeFormat()
+
   const log = root.querySelector('#log')
   const append = (message) => {
     log.hidden = false
@@ -1002,11 +1014,13 @@ async function renderExport(projectId) {
     button.disabled = true
     log.replaceChildren()
     try {
-      if (offline) await exportOffline(project, project.slidePlan, { onProgress: append })
+      const format = formatSelect.value
+      if (offline) await exportOffline(project, project.slidePlan, { onProgress: append, format })
       else
         await exportViaWorker(project, project.slidePlan, {
           baseUrl: state.workerUrl,
           onProgress: append,
+          format,
         })
       append('Done — check your downloads.')
       toast('Deck exported')
