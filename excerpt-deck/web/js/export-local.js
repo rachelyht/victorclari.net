@@ -2,6 +2,7 @@
 
 import { getBlob } from './db.js'
 import { composeDeck, imageKey } from './deck-pptx.js'
+import { scoreFiles } from './model.js'
 import { rasterizeScore, videoPoster } from './pdf-preview.js'
 import { dedupeMedia } from './pptx-dedupe.js'
 import { blobToDataUrl, downloadBlob, slugify } from './util.js'
@@ -14,13 +15,18 @@ async function collectImages(project, report) {
   const images = new Map()
   for (const excerpt of project.excerpts) {
     for (const source of ['partScore', 'fullScore']) {
-      const ref = excerpt[source]
-      if (!ref) continue
+      const files = scoreFiles(excerpt[source])
+      if (!files.length) continue
       report(`Rendering ${source === 'partScore' ? 'part' : 'full'} score — ${excerpt.title || 'excerpt'}`)
-      const blob = await getBlob(ref.blobKey)
-      if (!blob) throw new Error(`Missing file for ${ref.name}`)
-      const pages = await rasterizeScore(blob)
-      pages.forEach((dataUrl, page) => images.set(imageKey(excerpt.id, source, page), dataUrl))
+      let page = 0
+      for (const file of files) {
+        const blob = await getBlob(file.blobKey)
+        if (!blob) throw new Error(`Missing file for ${file.name}`)
+        for (const dataUrl of await rasterizeScore(blob)) {
+          images.set(imageKey(excerpt.id, source, page), dataUrl)
+          page += 1
+        }
+      }
     }
   }
   return images

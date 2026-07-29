@@ -249,6 +249,56 @@ input[type='file'] {
   font-size: 13px;
 }
 
+button.icon {
+  min-width: var(--tap);
+  padding: 0;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.file-list {
+  margin-top: 8px;
+}
+
+.file-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 6px;
+  margin-bottom: 6px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.file-row img {
+  width: 40px;
+  height: 54px;
+  object-fit: contain;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  flex: none;
+}
+
+.file-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.file-meta strong {
+  display: block;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-meta .meta {
+  font-size: 12px;
+  color: var(--muted);
+}
+
 .thumbs {
   display: flex;
   gap: 8px;

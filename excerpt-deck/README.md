@@ -59,14 +59,19 @@ npm test
 ```
 
 Covers the layout rules (slide counts, 2-up grouping, landscape pages, aspect-preserving fit, plan
-reconciliation) and an end-to-end worker run on a generated 3-page PDF and a 6-second clip,
-asserting the composed `.pptx` has one slide per planned slide and consistent media relationships.
-The end-to-end test skips itself when `ffmpeg`/`pdftoppm` are missing.
+reconciliation), multi-file scores (page flattening, order, garbage sweep) and two end-to-end runs:
+the pipeline directly on a generated 3-page PDF and a clip, and the worker over HTTP with a full
+score split across three image files, asserting the composed `.pptx` has one slide per planned
+slide and consistent media relationships. The end-to-end tests skip themselves when
+`ffmpeg`/`pdftoppm` are missing.
 
 ## How it works
 
 1. **Excerpt editor** — video source, start/end timestamps (typed or grabbed from the player), part
-   score and full score. `pdf.js` reads page count and page sizes as soon as a file is picked.
+   score and full score. Each score takes **one or more files** (a PDF, or a photo/scan per page):
+   files are appended in the order added, can be reordered or removed, and their pages are
+   flattened into one page sequence, so the 2-pages-per-slide rule spans files. `pdf.js` reads page
+   count and page sizes as soon as a file is picked.
 2. **`slide-plan.js`** turns the project into an explicit `SlidePlan`: every image and video box is
    stored as a fraction of the slide. Rules: one slide for the part score (multi-page PDFs are tiled
    onto it), then the full score two portrait pages per slide (landscape pages get their own slide),
@@ -104,3 +109,5 @@ worker
   step.
 - Keynote re-encodes media on import; check the deck once before rehearsal.
 - Everything is device-local — there is no sync between your phone and your Mac yet.
+- iPhone photos taken as HEIC only render in browsers that can decode HEIC (Safari does, desktop
+  Chrome does not). Export as JPEG, or use the PDF route, if a page comes out blank.

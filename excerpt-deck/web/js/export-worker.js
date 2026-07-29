@@ -1,9 +1,20 @@
 /** Worker export: used when an excerpt needs yt-dlp (YouTube) or an exact ffmpeg trim. */
 
 import { getBlob } from './db.js'
+import { scoreFiles } from './model.js'
 import { downloadBlob, slugify } from './util.js'
 
 const POLL_MS = 1500
+
+const scoreField = (source, excerptId, index) => `${source}:${excerptId}:${index}`
+
+function scoreManifest(source, excerpt) {
+  const files = scoreFiles(excerpt[source])
+  if (!files.length) return null
+  return {
+    files: files.map((file, index) => ({ field: scoreField(source, excerpt.id, index), name: file.name })),
+  }
+}
 
 function manifestFor(project, plan) {
   return {
@@ -19,8 +30,8 @@ function manifestFor(project, plan) {
         endSec: excerpt.video.endSec,
         file: excerpt.video.file ? { field: `video:${excerpt.id}`, name: excerpt.video.file.name } : null,
       },
-      partScore: excerpt.partScore ? { field: `partScore:${excerpt.id}`, name: excerpt.partScore.name } : null,
-      fullScore: excerpt.fullScore ? { field: `fullScore:${excerpt.id}`, name: excerpt.fullScore.name } : null,
+      partScore: scoreManifest('partScore', excerpt),
+      fullScore: scoreManifest('fullScore', excerpt),
     })),
   }
 }
@@ -30,15 +41,16 @@ async function buildFormData(project, plan) {
   form.append('manifest', JSON.stringify(manifestFor(project, plan)))
   for (const excerpt of project.excerpts) {
     const entries = [
-      ['partScore', excerpt.partScore],
-      ['fullScore', excerpt.fullScore],
-      ['video', excerpt.video.file],
+      ...['partScore', 'fullScore'].flatMap((source) =>
+        scoreFiles(excerpt[source]).map((file, index) => [scoreField(source, excerpt.id, index), file])
+      ),
+      [`video:${excerpt.id}`, excerpt.video.file],
     ]
     for (const [field, ref] of entries) {
       if (!ref?.blobKey) continue
       const blob = await getBlob(ref.blobKey)
       if (!blob) throw new Error(`Missing file for ${ref.name}`)
-      form.append('files', blob, `${field}:${excerpt.id}`)
+      form.append('files', blob, field)
     }
   }
   return form

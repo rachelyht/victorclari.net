@@ -24,6 +24,8 @@ import {
   findExcerpt,
   parseYouTubeId,
   projectIssues,
+  scoreFiles,
+  scoreRef,
   youTubeThumbnail,
 } from './model.js'
 import { probeScore, probeVideo, rasterizeScore, thumbnail, videoPoster } from './pdf-preview.js'
@@ -99,8 +101,8 @@ function assetSignature(project) {
   return JSON.stringify(
     project.excerpts.map((excerpt) => [
       excerpt.id,
-      excerpt.partScore?.blobKey,
-      excerpt.fullScore?.blobKey,
+      scoreFiles(excerpt.partScore).map((file) => file.blobKey),
+      scoreFiles(excerpt.fullScore).map((file) => file.blobKey),
       excerpt.video.file?.blobKey,
       excerpt.video.url,
       excerpt.video.startSec,
@@ -117,12 +119,15 @@ async function buildPreviewAssets(project) {
   const videos = new Map()
   for (const excerpt of project.excerpts) {
     for (const source of ['partScore', 'fullScore']) {
-      const ref = excerpt[source]
-      if (!ref) continue
-      const blob = await getBlob(ref.blobKey)
-      if (!blob) continue
-      const pages = await rasterizeScore(blob, { width: PREVIEW_WIDTH })
-      pages.forEach((dataUrl, page) => images.set(`${excerpt.id}:${source}:${page}`, dataUrl))
+      let page = 0
+      for (const file of scoreFiles(excerpt[source])) {
+        const blob = await getBlob(file.blobKey)
+        if (!blob) continue
+        for (const dataUrl of await rasterizeScore(blob, { width: PREVIEW_WIDTH })) {
+          images.set(`${excerpt.id}:${source}:${page}`, dataUrl)
+          page += 1
+        }
+      }
     }
     const label = videoLabelFor(excerpt)
     if (excerpt.video.source === 'youtube') {
@@ -376,14 +381,14 @@ async function renderExcerpt(projectId, excerptId) {
       <p class="hint" id="clip-hint"></p>
 
       <h2>Part score</h2>
-      <p class="hint">PDF or photo. Always placed on one slide.</p>
-      <input type="file" id="part" accept="application/pdf,image/*" />
-      <div class="thumbs" id="part-thumbs"></div>
+      <p class="hint">PDF or photos — add as many files as you need. Always placed on one slide.</p>
+      <input type="file" id="part" accept="application/pdf,image/*" multiple />
+      <div class="file-list" id="part-files"></div>
 
       <h2>Full score</h2>
-      <p class="hint">PDF of the excerpt only. Two portrait pages per slide.</p>
-      <input type="file" id="full" accept="application/pdf,image/*" />
-      <div class="thumbs" id="full-thumbs"></div>
+      <p class="hint">The excerpt only. Add several files if the score is one per page — pages follow the order below. Two portrait pages per slide.</p>
+      <input type="file" id="full" accept="application/pdf,image/*" multiple />
+      <div class="file-list" id="full-files"></div>
 
       <div class="row" style="margin-top:20px">
         <button class="primary" id="done">Done</button>
@@ -552,48 +557,87 @@ async function renderExcerpt(projectId, excerptId) {
     root.querySelector('#slide-count').textContent = `${count} slide${count === 1 ? '' : 's'}`
   }
 
-  async function attachScoreInput(inputId, thumbsId, field) {
+  async function attachScoreInput(inputId, listId, field) {
     const input = root.querySelector(`#${inputId}`)
-    const thumbs = root.querySelector(`#${thumbsId}`)
+    const list = root.querySelector(`#${listId}`)
 
-    async function drawThumb() {
-      thumbs.replaceChildren()
-      const ref = excerpt[field]
-      if (!ref) return
-      const blob = await getBlob(ref.blobKey)
-      if (!blob) return
-      const image = document.createElement('img')
-      image.src = await thumbnail(blob)
-      image.alt = ref.name
-      thumbs.appendChild(image)
-      const caption = document.createElement('span')
-      caption.className = 'meta'
-      caption.textContent = `${ref.name} · ${ref.pageCount} page${ref.pageCount === 1 ? '' : 's'} · ${formatBytes(ref.size)}`
-      thumbs.appendChild(caption)
-    }
-
-    input.onchange = async (event) => {
-      const file = event.target.files?.[0]
-      if (!file) return
-      toast('Reading score…')
-      const probe = await probeScore(file).catch(() => ({ pageCount: 1, pages: [] }))
-      const blobKey = await putBlob(file)
-      excerpt[field] = fileRef({
-        blobKey,
-        name: file.name,
-        mime: file.type || 'application/pdf',
-        size: file.size,
-        pageCount: probe.pageCount,
-        pages: probe.pages,
-      })
+    function commit(files) {
+      excerpt[field] = scoreRef(files)
       project.slidePlan = reconcileSlidePlan(project)
       state.assets.key = null
       save()
-      await drawThumb()
       updateSlideCount()
+      return draw()
     }
 
-    await drawThumb()
+    async function draw() {
+      const files = scoreFiles(excerpt[field])
+      list.replaceChildren()
+      for (const [position, file] of files.entries()) {
+        const row = element(`
+          <div class="file-row">
+            <img alt="" />
+            <div class="file-meta">
+              <strong></strong>
+              <span class="meta"></span>
+            </div>
+            <button class="icon" data-move="-1" aria-label="Move earlier" title="Move earlier">↑</button>
+            <button class="icon" data-move="1" aria-label="Move later" title="Move later">↓</button>
+            <button class="icon danger" data-remove aria-label="Remove file" title="Remove">×</button>
+          </div>
+        `)
+        row.querySelector('strong').textContent = file.name
+        const pageLabel = `${file.pageCount} page${file.pageCount === 1 ? '' : 's'}`
+        const first = files.slice(0, position).reduce((total, earlier) => total + (earlier.pageCount || 1), 1)
+        row.querySelector('.meta').textContent = `${pageLabel} · ${formatBytes(file.size)} · p. ${first}–${
+          first + (file.pageCount || 1) - 1
+        } of the score`
+        const blob = await getBlob(file.blobKey)
+        if (blob) row.querySelector('img').src = await thumbnail(blob)
+
+        row.querySelector('[data-move="-1"]').disabled = position === 0
+        row.querySelector('[data-move="1"]').disabled = position === files.length - 1
+        for (const button of row.querySelectorAll('[data-move]')) {
+          button.onclick = () => {
+            const target = position + Number(button.dataset.move)
+            const reordered = [...files]
+            ;[reordered[position], reordered[target]] = [reordered[target], reordered[position]]
+            commit(reordered)
+          }
+        }
+        row.querySelector('[data-remove]').onclick = () =>
+          commit(files.filter((_, other) => other !== position))
+        list.appendChild(row)
+      }
+      if (files.length > 1) {
+        const total = excerpt[field].pageCount
+        list.appendChild(element(`<p class="hint">${files.length} files · ${total} pages in total.</p>`))
+      }
+    }
+
+    input.onchange = async (event) => {
+      const picked = [...(event.target.files || [])]
+      if (!picked.length) return
+      toast(picked.length > 1 ? `Reading ${picked.length} files…` : 'Reading score…')
+      const added = []
+      for (const file of picked) {
+        const probe = await probeScore(file).catch(() => ({ pageCount: 1, pages: [] }))
+        added.push(
+          fileRef({
+            blobKey: await putBlob(file),
+            name: file.name,
+            mime: file.type || 'application/pdf',
+            size: file.size,
+            pageCount: probe.pageCount,
+            pages: probe.pages,
+          })
+        )
+      }
+      input.value = ''
+      await commit([...scoreFiles(excerpt[field]), ...added])
+    }
+
+    await draw()
   }
 
   root.querySelector('#done').onclick = () => go(`#/p/${project.id}`)
@@ -601,8 +645,8 @@ async function renderExcerpt(projectId, excerptId) {
   view.replaceChildren(root)
   await renderVideoSource()
   syncTimeInputs()
-  await attachScoreInput('part', 'part-thumbs', 'partScore')
-  await attachScoreInput('full', 'full-thumbs', 'fullScore')
+  await attachScoreInput('part', 'part-files', 'partScore')
+  await attachScoreInput('full', 'full-files', 'fullScore')
   updateSlideCount()
 }
 

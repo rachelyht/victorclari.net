@@ -35,6 +35,40 @@ export function fileRef({ blobKey, name, mime, size, pageCount = 1, pages = [], 
   return { blobKey, name, mime, size, pageCount, pages, durationSec }
 }
 
+/** The files making up a score, in page order. */
+export function scoreFiles(score) {
+  if (!score) return []
+  return score.files ?? [score]
+}
+
+function pagesOf(file) {
+  const dims = file.pages || []
+  return Array.from({ length: file.pageCount || 1 }, (_, page) => dims[page] || null)
+}
+
+/**
+ * A score may arrive as several files — a scan per page is common — so pages are flattened
+ * across the files in order and the rest of the app only sees one page sequence.
+ */
+export function scoreRef(files) {
+  const list = (files || []).filter(Boolean)
+  if (!list.length) return null
+  return {
+    files: list,
+    name: list.length === 1 ? list[0].name : `${list.length} files`,
+    size: list.reduce((total, file) => total + (file.size || 0), 0),
+    pageCount: list.reduce((total, file) => total + (file.pageCount || 1), 0),
+    pages: list.flatMap(pagesOf),
+  }
+}
+
+/** Flat page index -> which file it came from and its page inside that file. */
+export function scorePageSources(score) {
+  return scoreFiles(score).flatMap((file) =>
+    Array.from({ length: file.pageCount || 1 }, (_, page) => ({ file, page }))
+  )
+}
+
 export function findExcerpt(project, excerptId) {
   return project.excerpts.find((excerpt) => excerpt.id === excerptId) || null
 }
@@ -86,7 +120,7 @@ export function youTubeThumbnail(url) {
 export function referencedBlobKeys(project) {
   const keys = []
   for (const excerpt of project.excerpts) {
-    for (const ref of [excerpt.partScore, excerpt.fullScore, excerpt.video.file]) {
+    for (const ref of [...scoreFiles(excerpt.partScore), ...scoreFiles(excerpt.fullScore), excerpt.video.file]) {
       if (ref?.blobKey) keys.push(ref.blobKey)
     }
     if (excerpt.video.posterBlobKey) keys.push(excerpt.video.posterBlobKey)

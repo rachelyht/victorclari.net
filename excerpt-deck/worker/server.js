@@ -105,15 +105,20 @@ async function processJob(job, manifest, files) {
       const entry = excerpt[source]
       if (!entry) continue
       job.message = `Rendering ${source === 'partScore' ? 'part' : 'full'} score — ${name}`
-      const uploaded = files.get(entry.field)
-      if (!uploaded) throw new Error(`missing upload for ${entry.field}`)
-      const suffix = entry.name.toLowerCase().endsWith('.pdf') ? '.pdf' : path.extname(entry.name) || '.png'
-      const scorePath = path.join(workDir, `${entry.field.replace(/[^\w.-]/g, '_')}${suffix}`)
-      await writeFile(scorePath, await readFile(uploaded))
-      const pages = await rasterizeScore(scorePath, workDir, `${source}_${excerpt.id}`)
-      for (const [page, file] of pages.entries()) {
-        const mime = file.endsWith('.png') ? 'image/png' : 'image/jpeg'
-        images.set(imageKey(excerpt.id, source, page), await dataUrl(file, mime))
+      // A score can be split over several files; pages are numbered across them in order.
+      let page = 0
+      for (const [index, part] of (entry.files ?? [entry]).entries()) {
+        const uploaded = files.get(part.field)
+        if (!uploaded) throw new Error(`missing upload for ${part.field}`)
+        const suffix = path.extname(part.name).toLowerCase() || '.png'
+        const scorePath = path.join(workDir, `${source}_${excerpt.id}_${index}${suffix}`)
+        await writeFile(scorePath, await readFile(uploaded))
+        const rendered = await rasterizeScore(scorePath, workDir, `${source}_${excerpt.id}_${index}`)
+        for (const file of rendered) {
+          const mime = file.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg'
+          images.set(imageKey(excerpt.id, source, page), await dataUrl(file, mime))
+          page += 1
+        }
       }
     }
 
