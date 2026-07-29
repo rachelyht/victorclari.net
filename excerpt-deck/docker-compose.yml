@@ -1,0 +1,21 @@
+services:
+  worker:
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+    ports:
+      - '8787:8787'
+    volumes:
+      - worker-jobs:/tmp/excerpt-deck-jobs
+
+  web:
+    image: node:20-bookworm-slim
+    working_dir: /web
+    command: npx --yes http-server -p 8080 -c-1 .
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./web:/web:ro
+
+volumes:
+  worker-jobs:
