@@ -30,7 +30,7 @@ import {
 } from './model.js'
 import { probeScore, probeVideo, rasterizeScore, thumbnail, videoPoster } from './pdf-preview.js'
 import { buildExcerptSlides, reconcileSlidePlan } from './slide-plan.js'
-import { mountSlideEditor, relayoutImages, renderSlide, videoLabelFor } from './storyboard.js'
+import { mountSlideEditor, relayoutImages, renderSlide, splitSlide, videoLabelFor } from './storyboard.js'
 import { debounce, formatBytes, formatTime, parseTime, uid } from './util.js'
 import { mountLocalPlayer } from './video-local.js'
 import { mountPlayer } from './youtube.js'
@@ -379,6 +379,10 @@ async function renderExcerpt(projectId, excerptId) {
         </div>
       </div>
       <p class="hint" id="clip-hint"></p>
+      <label class="check" id="trim-row" hidden>
+        <input type="checkbox" id="trim-worker" />
+        Trim exactly with the local worker (instead of embedding the whole file)
+      </label>
 
       <h2>Part score</h2>
       <p class="hint">PDF or photos — add as many files as you need. Always placed on one slide.</p>
@@ -407,6 +411,15 @@ async function renderExcerpt(projectId, excerptId) {
     save()
   }
 
+  const trimRow = root.querySelector('#trim-row')
+  const trimCheck = root.querySelector('#trim-worker')
+  trimCheck.checked = excerpt.video.trim === 'worker'
+  trimCheck.onchange = () => {
+    excerpt.video.trim = trimCheck.checked ? 'worker' : 'badge'
+    save()
+    refreshClipHint()
+  }
+
   const sourceButtons = root.querySelectorAll('[data-source]')
   const sourceArea = root.querySelector('#video-source')
   const playerArea = root.querySelector('#player')
@@ -420,7 +433,11 @@ async function renderExcerpt(projectId, excerptId) {
     const issues = excerptIssues(excerpt)
     const length = startSec != null && endSec != null && endSec > startSec ? endSec - startSec : null
     clipHint.textContent = length
-      ? `Clip length ${formatTime(length)}. Offline export embeds the whole file with this window labelled on every slide; the local worker can trim it exactly.`
+      ? `Clip length ${formatTime(length)}. ${
+          excerpt.video.trim === 'worker'
+            ? 'The worker will cut exactly this window.'
+            : 'The deck embeds the whole file with this window labelled on every slide.'
+        }`
       : issues.find((issue) => issue.includes('timestamp')) || 'Set the excerpt start and end.'
   }
 
@@ -474,6 +491,10 @@ async function renderExcerpt(projectId, excerptId) {
 
     releasePlayers()
     player = null
+    // YouTube clips are always cut by the worker; only uploads get the choice.
+    trimRow.hidden = excerpt.video.source !== 'upload'
+    trimCheck.checked = excerpt.video.trim === 'worker'
+    refreshClipHint()
 
     if (excerpt.video.source === 'youtube') {
       const field = element(`
@@ -501,7 +522,7 @@ async function renderExcerpt(projectId, excerptId) {
       <div>
         <label for="video-file">Video file</label>
         <input type="file" id="video-file" accept="video/*" />
-        <p class="hint">Exports fully offline — no worker needed.</p>
+        <p class="hint">Exports fully offline — no worker needed unless you ask for an exact trim.</p>
         <div class="meta" id="video-meta"></div>
       </div>
     `)

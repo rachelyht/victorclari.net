@@ -178,6 +178,25 @@ label {
   font-weight: 600;
 }
 
+label.check {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-height: var(--tap);
+  font-weight: 500;
+}
+
+label.check[hidden] {
+  display: none;
+}
+
+label.check input {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  flex: none;
+}
+
 input[type='text'],
 input[type='url'],
 input[type='number'],

@@ -28,8 +28,13 @@ export function contentBox(video) {
   const top = TITLE.y + TITLE.h + GAP
   const box = { x: MARGIN, y: top, w: 1 - MARGIN * 2, h: 1 - top - MARGIN }
   if (!video) return box
+  // Keep clear of whichever side the video sits on, otherwise a right-hand video pushes the
+  // score off the slide.
+  if (video.x + video.w / 2 > 0.5) {
+    return { ...box, w: Math.max(0, video.x - GAP - MARGIN) }
+  }
   const left = video.x + video.w + GAP
-  return { x: left, y: top, w: 1 - MARGIN - left, h: 1 - top - MARGIN }
+  return { x: left, y: top, w: Math.max(0, 1 - MARGIN - left), h: 1 - top - MARGIN }
 }
 
 /** Largest box with `aspect` (w/h in inches) that fits inside `box` (slide fractions). */

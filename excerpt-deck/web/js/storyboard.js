@@ -101,6 +101,36 @@ export function relayoutImages(slide, excerpt) {
   })
 }
 
+const pageTitle = (title, page) => `${(title || '').replace(/\s+—\s+full score\s+p\..*$/, '')} — full score p. ${page + 1}`
+
+/**
+ * Turns a 2-up slide into one slide per page. The first keeps the generated id (as an edit) and
+ * the second becomes a manual slide, so `reconcileSlidePlan` does not resurrect the 2-up slide.
+ */
+export function splitSlide(project, index) {
+  const plan = project.slidePlan || []
+  const slide = plan[index]
+  if ((slide?.images || []).length < 2) return plan
+  const excerpt = project.excerpts.find((candidate) => candidate.id === slide.excerptId)
+
+  const parts = slide.images.map((image, position) => {
+    const part = {
+      ...slide,
+      id: position === 0 ? slide.id : `${slide.id}:p${image.page}`,
+      title: slide.kind === 'full' ? pageTitle(slide.title, image.page) : slide.title,
+      images: [{ ...image }],
+      edited: true,
+      manual: position > 0,
+    }
+    if (excerpt) relayoutImages(part, excerpt)
+    return part
+  })
+
+  project.slidePlan = [...plan.slice(0, index), ...parts, ...plan.slice(index + 1)]
+  project.planEditedAt = Date.now()
+  return project.slidePlan
+}
+
 function clampBox(box) {
   const w = Math.min(0.6, Math.max(0.06, box.w))
   const h = (w / box.w) * box.h
